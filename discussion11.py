@@ -31,7 +31,7 @@ def create_species_table(cur, conn):
     ]
 
     cur.execute("DROP TABLE IF EXISTS Species")
-    cur.execute("CREATE TABLE Species (id INTEGER PRIMARY KEY, title TEXT)")
+    cur.execute("CREATE TABLE Species (id INTEGER PRIMARY KEY, title TEXT)") # primary keys must be unique
     for i in range(len(species)):
         cur.execute("INSERT INTO Species (id,title) VALUES (?,?)",(i,species[i]))
     conn.commit()
@@ -39,12 +39,24 @@ def create_species_table(cur, conn):
 # TASK 1
 # CREATE TABLE FOR PATIENTS IN DATABASE
 def create_patients_table(cur, conn):
-    pass
+
+    # Pet id, name (string), species_id (number), age (integer), cuteness (integer), aggressiveness (number)
+    cur.execute("DROP TABLE IF EXISTS Patients")
+    cur.execute("CREATE TABLE Patients (id INTEGER PRIMARY KEY, name TEXT, species_id INTEGER, \
+        age INTEGER, cuteness INTEGER, aggressiveness INTEGER)") 
+
+    conn.commit()
+    
 
 
 # ADD FLUFFLE TO THE TABLE
 def add_fluffle(cur, conn):
-    pass
+
+    # Name = Fluffle, species = “Rabbit”, age = 3, cuteness = 90, aggressiveness = 100
+    cur.execute("INSERT INTO Patients (id, name, species_id, age, cuteness, aggressiveness) VALUES (?,?,?,?,?,?)", ('0', 'Fluffle', '0', '3', '90', '100'))
+
+    conn.commit()
+
     
 
 # TASK 2
@@ -59,7 +71,23 @@ def add_pets_from_json(filename, cur, conn):
     json_data = json.loads(file_data)
 
     # THE REST IS UP TO YOU
-    pass
+
+    id = 1
+    for i in json_data:
+
+        name = i['name']
+        cur.execute('SELECT id from Species WHERE title = ?', (i['species'], ))
+        species = int(cur.fetchone()[0])
+        age = int(i['age'])
+        cuteness = int(i['cuteness'])
+        aggressiveness = int(i['aggressiveness'])
+        
+        cur.execute("INSERT INTO Patients (id, name, species_id, age, cuteness, aggressiveness) VALUES (?,?,?,?,?,?)", 
+            (id, name, species, age, cuteness, aggressiveness))
+
+        id += 1
+    conn.commit()
+
 
 
 # TASK 3
